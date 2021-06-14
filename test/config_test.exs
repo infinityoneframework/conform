@@ -15,8 +15,8 @@ defmodule ConfigTest do
      lager: [
          handlers: [
              lager_console_backend: :info,
-             lager_file_backend: [file: "/var/log/console.log", level: :info],
-             lager_file_backend: [file: "/var/log/error.log",    level: :error]
+             lager_file_backend: [file: "/var/log/error.log",    level: :error],
+             lager_file_backend: [file: "/var/log/console.log", level: :info]
            ]],
      my_app: [
          another_val: {:on, [{:debug, true}, {:tracing, true}]},

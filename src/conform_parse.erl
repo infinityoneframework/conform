@@ -14,7 +14,7 @@
 
 
 
--define(line, true).
+%% -define(line, true).
 -define(FMT(F,A), lists:flatten(io_lib:format(F,A))).
 
 %% @doc Only let through lines that are not comments or whitespace.

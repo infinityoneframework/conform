@@ -22,7 +22,7 @@ defmodule ConformCodeTest do
           case val do
             :baz -> :qux
             _    ->
-              result = val |> String.to_atom
+              result = val |> String.to_atom()
               result
           end
       end]]
