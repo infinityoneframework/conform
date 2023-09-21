@@ -10,7 +10,7 @@ defmodule IntegrationTest do
              {:options, [{:type, :realm}, {:strip, true}, {:separator, '@'}]},
              {:routes, [{'test', {{127,0,0,1}, 1815, "secret"}}]}]
     effective = Conform.Translate.to_config(schema, config, conf)
-    expected = [logger: [format: "$time $metadata[$level] $levelpad$message\n"],
+    expected = [logger: [format: "$time $metadata[$level] $message\n"],
                 sasl: [errlog_type: :error],
                 test: [
                   another_val: :none,
@@ -131,7 +131,7 @@ defmodule IntegrationTest do
       transforms: [],
       validators: []
     ]
-    """ |> String.strip(?\n) == result
+    """ |> String.trim("\n") == result
   end
 
 end

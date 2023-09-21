@@ -5,3 +5,4 @@ erl_crash.dump
 /conform
 doc
 test/configs/*.schema.exs
+priv/bin/conform

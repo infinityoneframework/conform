@@ -189,7 +189,7 @@ defmodule ConfTranslateTest do
 
     config_path = Path.join(System.tmp_dir!, "conform_test.config")
     :ok    = config_path |> Conform.SysConfig.write(config)
-    result = config_path |> String.to_char_list |> :file.consult
+    result = config_path |> String.to_charlist |> :file.consult
     config_path |> File.rm!
     assert {:ok, [^config]} = result
   end
