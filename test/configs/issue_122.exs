@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :tiser,
   ecto_repos: [Tiser.Repo]

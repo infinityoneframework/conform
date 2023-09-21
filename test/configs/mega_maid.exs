@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :mega_maid, MegaMaid.Endpoint,
  render_errors: [accepts: ["html","json"]],

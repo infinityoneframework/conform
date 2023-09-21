@@ -2,7 +2,7 @@ defmodule IntegrationTest do
   use ExUnit.Case
 
   test "effective configuration" do
-    config = Path.join(["test", "fixtures", "test_app", "config.exs"]) |> Mix.Config.read!
+    config = Path.join(["test", "fixtures", "test_app", "config.exs"]) |> Config.Reader.read!
     {:ok, conf} = Path.join(["test", "fixtures", "test_app", "test.conf"]) |> Conform.Conf.from_file
     schema = Path.join(["test", "fixtures", "test_app", "test.schema.exs"]) |> Conform.Schema.load!
 
@@ -92,7 +92,7 @@ defmodule IntegrationTest do
 
   test "can generate default schema from config" do
     config_path = Path.join(["test", "configs", "nested_list.exs"])
-    config = Mix.Config.read!(config_path)
+    config = Config.Reader.read!(config_path)
     schema = Conform.Schema.from_config(config)
     result = Conform.Schema.stringify(schema, false)
     assert """

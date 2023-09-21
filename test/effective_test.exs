@@ -2,7 +2,7 @@ defmodule ConformEffectiveTest do
   use ExUnit.Case, async: true
 
   test "defaults and transforms" do
-    config = Mix.Config.read!(Path.join([__DIR__, "configs", "readme_example.exs"]))
+    config = Config.Reader.read!(Path.join([__DIR__, "configs", "readme_example.exs"]))
     {:ok, conf} = Conform.Conf.from_file(Path.join([__DIR__, "confs", "readme_example.conf"]))
     schema = Conform.Schema.load!(Path.join([__DIR__, "schemas", "readme_example.schema.exs"]))
     effective = Conform.Translate.to_config(schema, config, conf)
@@ -11,7 +11,7 @@ defmodule ConformEffectiveTest do
   end
 
   test "issue #112" do
-    config = Mix.Config.read!(Path.join([__DIR__, "configs", "evl_daemon.exs"]))
+    config = Config.Reader.read!(Path.join([__DIR__, "configs", "evl_daemon.exs"]))
     {:ok, conf} = Conform.Conf.from_file(Path.join([__DIR__, "confs", "evl_daemon.conf"]))
     schema = Conform.Schema.load!(Path.join([__DIR__, "schemas", "evl_daemon.schema.exs"]))
     effective = Conform.Translate.to_config(schema, config, conf)

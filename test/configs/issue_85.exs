@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :rocket, Rocket.Endpoint,
   url: [host: "localhost"],

@@ -94,7 +94,7 @@ defmodule ConfTranslateTest do
   test "can handle utf8 values when translating" do
     cwd = File.cwd!
     script = Path.join([cwd, "priv", "bin", "conform"])
-    sys_config = Mix.Config.read!(Path.join([cwd, "test", "configs", "utf8.exs"]))
+    sys_config = Config.Reader.read!(Path.join([cwd, "test", "configs", "utf8.exs"]))
     utf8_dir = Path.join([cwd, "test", "fixtures", "utf8"])
     File.mkdir_p!(utf8_dir)
     sys_config_path = Path.join([utf8_dir, "utf8_sys.config"])
@@ -196,7 +196,7 @@ defmodule ConfTranslateTest do
 
   test "can translate with nested lists to conf" do
     path   = Path.join(["test", "configs", "nested_list.exs"])
-    config = path |> Mix.Config.read!
+    config = path |> Config.Reader.read!
     schema = Conform.Schema.from_config(config)
     conf   = Conform.Translate.to_conf(schema)
     expected = """

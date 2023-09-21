@@ -84,7 +84,7 @@ defmodule Mix.Tasks.Conform.Effective do
       if File.exists?("config/config.exs") do
         # Switch environments when reading the config
         with_env args.env, fn ->
-          Path.join([File.cwd!, "config", "config.exs"]) |> Mix.Config.read!
+          Path.join([File.cwd!, "config", "config.exs"]) |> Config.Reader.read!
         end
       else
         []

@@ -212,7 +212,7 @@ defmodule ConformCodeTest do
       conf_path = Path.join([__DIR__, "confs", "issue_122.conf"])
       File.rm(schema_path)
       File.rm(conf_path)
-      config = Mix.Config.read!(config_path)
+      config = Config.Reader.read!(config_path)
       schema = Conform.Schema.from_config(config)
       Conform.Schema.write_quoted(schema, schema_path)
       # Convert configuration to schema format

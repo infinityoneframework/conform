@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 proxy = [{:default_route, {{127,0,0,1}, 1813, "secret"}},
          {:options, [{:type, :realm}, {:strip, true}, {:separator, '@'}]},

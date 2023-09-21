@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :evl_daemon, host: '127.0.0.1'
 config :evl_daemon, port: 4025
