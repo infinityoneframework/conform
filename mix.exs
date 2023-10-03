@@ -1,7 +1,8 @@
 defmodule Conform.Mixfile do
   use Mix.Project
 
-  @compile_peg_task "tasks/compile.peg.exs"
+  # @compile_peg_task "tasks/compile.peg.exs"
+  @compile_peg_task "tasks/nocompile.peg.exs"
   @do_peg_compile?  File.exists?(@compile_peg_task)
   if @do_peg_compile? do
     Code.eval_file @compile_peg_task
