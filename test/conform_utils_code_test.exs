@@ -2,6 +2,14 @@ defmodule ConformCodeTest do
   use ExUnit.Case
   import ExUnit.CaptureIO
 
+  test "regex modifiers survive schema serialization" do
+    regex = ~r/café/iu
+    serialized = Conform.Utils.Code.stringify(pattern: regex)
+    {config, _} = Code.eval_string(serialized)
+    assert Regex.source(config[:pattern]) == Regex.source(regex)
+    assert Regex.opts(config[:pattern]) == Regex.opts(regex)
+  end
+
   test "can stringify function and case blocks" do
     source = """
     [transforms: [
@@ -27,72 +35,79 @@ defmodule ConformCodeTest do
           end
       end]]
     """
-    stringified = """
-    [
-      transforms: [
-        single_clause: fn val ->
-          case val do
-            foo when foo in [:foo] ->
-              bar = String.to_atom("bar")
-              bar
-            bar when bar != :baz ->
-              baz = String.to_atom(bar)
-              baz
-            :baz ->
-              :qux
-          end
-        end,
-        multi_clause: fn
-          :foo ->
-            bar
-          val ->
+
+    stringified =
+      """
+      [
+        transforms: [
+          single_clause: fn val ->
             case val do
+              foo when foo in [:foo] ->
+                bar = String.to_atom("bar")
+                bar
+              bar when bar != :baz ->
+                baz = String.to_atom(bar)
+                baz
               :baz ->
                 :qux
-              _ ->
-                result = val |> String.to_atom()
-                result
             end
-        end
+          end,
+          multi_clause: fn
+            :foo ->
+              bar
+            val ->
+              case val do
+                :baz ->
+                  :qux
+                _ ->
+                  result = val |> String.to_atom()
+                  result
+              end
+          end
+        ]
       ]
-    ]
-    """ |> String.trim("\n")
+      """
+      |> String.trim("\n")
 
     {:ok, quoted} = Code.string_to_quoted(source)
     assert stringified == Conform.Utils.Code.stringify(quoted)
   end
 
   test "can stringify strings" do
-    singleline      = "Doing stuff and things."
+    singleline = "Doing stuff and things."
     single_expected = "\"Doing stuff and things.\""
-    multiline  = """
+
+    multiline = """
     Determine the type of thing.
     * active: it's going to be active
     * passive: it's going to be passive
     * active-debug: it's going to be active, with verbose debugging information
     Just testing "nested quotes"
     """
-    multi_expected = """
-    \"\"\"
-    Determine the type of thing.
-    * active: it's going to be active
-    * passive: it's going to be passive
-    * active-debug: it's going to be active, with verbose debugging information
-    Just testing "nested quotes"
-    \"\"\"
-    """ |> String.trim("\n")
 
-    {:ok, singleline_quoted} = singleline |> Macro.to_string |> Code.string_to_quoted
-    {:ok, multiline_quoted}  = multiline |> Macro.to_string |> Code.string_to_quoted
-    assert single_expected == (singleline_quoted |> Conform.Utils.Code.stringify)
-    assert multi_expected  == (multiline_quoted |> Conform.Utils.Code.stringify)
+    multi_expected =
+      """
+      \"\"\"
+      Determine the type of thing.
+      * active: it's going to be active
+      * passive: it's going to be passive
+      * active-debug: it's going to be active, with verbose debugging information
+      Just testing "nested quotes"
+      \"\"\"
+      """
+      |> String.trim("\n")
+
+    {:ok, singleline_quoted} = singleline |> Macro.to_string() |> Code.string_to_quoted()
+    {:ok, multiline_quoted} = multiline |> Macro.to_string() |> Code.string_to_quoted()
+    assert single_expected == singleline_quoted |> Conform.Utils.Code.stringify()
+    assert multi_expected == multiline_quoted |> Conform.Utils.Code.stringify()
   end
 
   test "can stringify complex datastructures" do
     data = """
     ["myapp.another_val": [
       to:       "myapp.another_val",
-      datatype: [enum: [:active, :passive, :'active-debug']],
+      datatype: [enum: [:active, :passive, :\"active-debug\"]],
       default:  %{test: :foo},
       doc: \"\"\"
       Determine the type of thing.
@@ -106,36 +121,38 @@ defmodule ConformCodeTest do
       ]]
     """
 
-    expected = """
-    [
-      "myapp.another_val": [
-        to: "myapp.another_val",
-        datatype: [
-          enum: [
-            :active,
-            :passive,
-            :"active-debug"
-          ]
+    expected =
+      """
+      [
+        "myapp.another_val": [
+          to: "myapp.another_val",
+          datatype: [
+            enum: [
+              :active,
+              :passive,
+              :"active-debug"
+            ]
+          ],
+          default: %{test: :foo},
+          doc: \"\"\"
+          Determine the type of thing.
+          * active: it's going to be active
+          * passive: it's going to be passive
+          * active-debug: it's going to be active, with verbose debugging information
+          \"\"\"
         ],
-        default: %{test: :foo},
-        doc: \"\"\"
-        Determine the type of thing.
-        * active: it's going to be active
-        * passive: it's going to be passive
-        * active-debug: it's going to be active, with verbose debugging information
-        \"\"\"
-      ],
-      "myapp.some_pattern": [
-        default: [
-          ~r/[A-Z]+/
+        "myapp.some_pattern": [
+          default: [
+            ~r/[A-Z]+/
+          ]
         ]
       ]
-    ]
-    """ |> String.trim("\n")
+      """
+      |> String.trim("\n")
 
-    {:ok, quoted} = data |> Code.string_to_quoted
+    {:ok, quoted} = data |> Code.string_to_quoted()
     {schema, _} = Code.eval_quoted(quoted, file: "nofile", line: 0)
-    result = (schema |> Conform.Utils.Code.stringify)
+    result = schema |> Conform.Utils.Code.stringify()
     assert expected == result
   end
 
@@ -150,7 +167,7 @@ defmodule ConformCodeTest do
               data = %{log: :warn}
               more_data = %{data | :log => :warn}
               {:on, [data: data]}
-            :'active-debug' -> {:on, [debug: true]}
+            :\"active-debug\" -> {:on, [debug: true]}
             :passive        -> {:off, []}
             _               -> {:on, []}
           end
@@ -166,43 +183,45 @@ defmodule ConformCodeTest do
     ]]
     """
 
-    expected = """
-    [
-      translations: [
-        "myapp.another_val": fn
-          :foo ->
-            :bar
-          val ->
-            case val do
-              :active ->
-                data = %{log: :warn}
-                more_data = %{data | log: :warn}
-                {:on, data: data}
-              :"active-debug" ->
-                {:on, debug: true}
-              :passive ->
-                {:off, []}
-              _ ->
-                {:on, []}
-            end
-        end,
-        "myapp.some_val": fn
-          :foo ->
-            :bar
-          val ->
-            case val do
-              :foo ->
-                :bar
-              _ ->
-                val
-            end
-        end
+    expected =
+      """
+      [
+        translations: [
+          "myapp.another_val": fn
+            :foo ->
+              :bar
+            val ->
+              case val do
+                :active ->
+                  data = %{log: :warn}
+                  more_data = %{data | log: :warn}
+                  {:on, data: data}
+                :"active-debug" ->
+                  {:on, debug: true}
+                :passive ->
+                  {:off, []}
+                _ ->
+                  {:on, []}
+              end
+          end,
+          "myapp.some_val": fn
+            :foo ->
+              :bar
+            val ->
+              case val do
+                :foo ->
+                  :bar
+                _ ->
+                  val
+              end
+          end
+        ]
       ]
-    ]
-    """ |> String.trim("\n")
+      """
+      |> String.trim("\n")
 
-    {:ok, quoted} = data |> Code.string_to_quoted
-    assert expected == (quoted |> Conform.Utils.Code.stringify)
+    {:ok, quoted} = data |> Code.string_to_quoted()
+    assert expected == quoted |> Conform.Utils.Code.stringify()
   end
 
   test "generating a new schema and conf from complex config should work out of the box" do

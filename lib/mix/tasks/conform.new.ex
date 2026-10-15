@@ -13,15 +13,16 @@ defmodule Mix.Tasks.Conform.New do
 
   def run(_args) do
     Mix.Tasks.Loadpaths.run([])
-    if Mix.Project.umbrella? do
+
+    if Mix.Project.umbrella?() do
       # Execute task for each project in the umbrella
-      for %Mix.Dep{app: app, opts: opts} <- Mix.Dep.Umbrella.loaded do
+      for %Mix.Dep{app: app, opts: opts} <- Mix.Dep.Umbrella.loaded() do
         Mix.Project.in_project(app, opts[:path], opts, fn _ ->
           do_run(app, Path.expand("config/config.exs"))
         end)
       end
     else
-      app = Mix.Project.config |> Keyword.get(:app)
+      app = Mix.Project.config() |> Keyword.get(:app)
       do_run(app, Path.expand("config/config.exs"))
     end
   end
@@ -36,31 +37,42 @@ defmodule Mix.Tasks.Conform.New do
       else
         true
       end
+
     if continue? do
       # Ensure output directory exists
-      output_path |> Path.dirname |> File.mkdir_p!
+      output_path |> Path.dirname() |> File.mkdir_p!()
+
       if File.exists?(config_path) do
         # Load existing config and convert it to quoted schema terms
         config = Config.Reader.read!(config_path)
         schema = Conform.Schema.from_config(config)
         # Write the generated schema to `output_path`
         Conform.Schema.write_quoted(schema, output_path)
-        Conform.Logger.success "The schema for your project has been placed in #{Path.relative_to_cwd(output_path)}"
+
+        Conform.Logger.success(
+          "The schema for your project has been placed in #{Path.relative_to_cwd(output_path)}"
+        )
       else
-        Conform.Logger.warn "Your project does not currently have any configuration!"
-        Conform.Schema.write_quoted(Conform.Schema.empty, output_path)
-        Conform.Logger.success "An empty schema has been placed in #{Path.relative_to_cwd(output_path)}"
+        Conform.Logger.warn("Your project does not currently have any configuration!")
+        Conform.Schema.write_quoted(Conform.Schema.empty(), output_path)
+
+        Conform.Logger.success(
+          "An empty schema has been placed in #{Path.relative_to_cwd(output_path)}"
+        )
       end
     end
   end
 
   defp confirm_overwrite?(output_path) do
-    IO.puts IO.ANSI.yellow
-    confirmed? = Mix.Shell.IO.yes?("""
+    IO.puts(IO.ANSI.yellow())
+
+    confirmed? =
+      Mix.Shell.IO.yes?("""
       You already have a schema at #{Path.relative_to_cwd(output_path)}.
       Do you want to overwrite this schema with a new one?
       """)
-    IO.puts IO.ANSI.reset
+
+    IO.puts(IO.ANSI.reset())
     confirmed?
   end
 end

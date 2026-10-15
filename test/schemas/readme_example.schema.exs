@@ -31,7 +31,7 @@
       doc: "A simple list",
       to: "my_app.nodelist",
       datatype: [list: :atom],
-      default: [:'a@foo', :'b@foo']
+      default: [:a@foo, :b@foo]
     ],
     "my_app.db.hosts": [
       doc: "Remote database hosts",
@@ -40,10 +40,10 @@
       default: [{"127.0.0.1", "8001"}]
     ],
     "my_app.some_val": [
-      doc:      "Just some atom.",
-      to:       "my_app.some_val",
+      doc: "Just some atom.",
+      to: "my_app.some_val",
       datatype: :atom,
-      default:  :foo
+      default: :foo
     ],
     "my_app.another_val": [
       doc: "Just another enum",
@@ -82,35 +82,39 @@
       doc: "Enabled storage engines and their options.",
       hidden: false,
       to: "evl_daemon.storage_engines"
-    ],
+    ]
   ],
-
   transforms: [
     "my_app.another_val": fn conf ->
       case Conform.Conf.get(conf, "my_app.another_val") do
-        [{_, :all}]  -> {:on, [debug: true, tracing: true]}
+        [{_, :all}] -> {:on, [debug: true, tracing: true]}
         [{_, :some}] -> {:on, [debug: true]}
         [{_, :none}] -> {:off, []}
-        _            -> {:off, []}
+        _ -> {:off, []}
       end
     end,
     "my_app.max_demand": fn conf ->
       res = Conform.Conf.get(conf, "my_app.max_demand")
+
       case res do
         [{_, n}] when is_integer(n) and n > 0 -> n
         _ -> 40
       end
     end,
     "lager.handlers": fn conf ->
-      backends = Conform.Conf.find(conf, "lager.handlers.$backend")
-      |> Enum.reduce([], fn
-        {[_,_,'lager_file_backend', level], path}, acc ->
-          [{:lager_file_backend, [level: :"#{level}", file: path]}|acc]
-        {[_,_,'lager_console_backend'], level}, acc ->
-          [{:lager_console_backend, level}|acc]
-      end)
+      backends =
+        conf
+        |> Conform.Conf.find("lager.handlers.$backend")
+        |> Enum.reduce([], fn
+          {[_, _, ~c"lager_file_backend", level], path}, acc ->
+            [{:lager_file_backend, [level: :"#{level}", file: path]} | acc]
+
+          {[_, _, ~c"lager_console_backend"], level}, acc ->
+            [{:lager_console_backend, level} | acc]
+        end)
+
       Conform.Conf.remove(conf, "lager.handlers.$backend")
       backends
-    end,
+    end
   ]
 ]
