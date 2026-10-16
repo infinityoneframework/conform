@@ -7,11 +7,12 @@ config :rocket, Rocket.Endpoint,
   debug_errors: false,
   http: [
     dispatch: [
-      {:_, [
-          {"/ws",               Pixie.Adapter.Cowboy.HttpHandler, {Pixie.Adapter.Plug, []}},
-          {"/messagerocket.js", :cowboy_static,                   {:file, Path.join(Path.dirname(__DIR__),"priv/static/messagerocket.js")}},
-          {:_,                  Plug.Adapters.Cowboy.Handler,     {Rocket.Endpoint, []}}
-        ]
-      }
+      {:_,
+       [
+         {"/ws", Pixie.Adapter.Cowboy.HttpHandler, {Pixie.Adapter.Plug, []}},
+         {"/messagerocket.js", :cowboy_static,
+          {:file, Path.join(Path.dirname(__DIR__), "priv/static/messagerocket.js")}},
+         {:_, Plug.Adapters.Cowboy.Handler, {Rocket.Endpoint, []}}
+       ]}
     ]
   ]

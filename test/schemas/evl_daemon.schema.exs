@@ -1,7 +1,6 @@
 [
   extends: [],
-  import: [
-  ],
+  import: [],
   mappings: [
     "evl_daemon.mailer_api_key": [
       commented: false,
@@ -123,29 +122,29 @@
       doc: "The authentication token to access EVL Daemon over HTTP.",
       hidden: false,
       to: "evl_daemon.auth_token"
-    ],
+    ]
   ],
   transforms: [
-    "evl_daemon.zones": fn (conf) ->
-      [{_key, zones}]  = Conform.Conf.get(conf, "evl_daemon.zones")
+    "evl_daemon.zones": fn conf ->
+      [{_key, zones}] = Conform.Conf.get(conf, "evl_daemon.zones")
 
-      Enum.reduce(zones, Map.new, fn [zone, description], zone_map ->
-         Map.put(
-           zone_map,
-           zone |> to_string |> String.pad_leading(3, "0"),
-           List.to_string(description)
-         )
+      Enum.reduce(zones, Map.new(), fn [zone, description], zone_map ->
+        Map.put(
+          zone_map,
+          zone |> to_string() |> String.pad_leading(3, "0"),
+          List.to_string(description)
+        )
       end)
     end,
-    "evl_daemon.partitions": fn (conf) ->
-      [{_key, partitions}]  = Conform.Conf.get(conf, "evl_daemon.partitions")
+    "evl_daemon.partitions": fn conf ->
+      [{_key, partitions}] = Conform.Conf.get(conf, "evl_daemon.partitions")
 
-      Enum.reduce(partitions, Map.new, fn [partition, description], partition_map ->
-         Map.put(
-           partition_map,
-           partition |> to_string,
-           List.to_string(description)
-         )
+      Enum.reduce(partitions, Map.new(), fn [partition, description], partition_map ->
+        Map.put(
+          partition_map,
+          partition |> to_string(),
+          List.to_string(description)
+        )
       end)
     end
   ],

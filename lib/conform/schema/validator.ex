@@ -38,27 +38,31 @@ defmodule Conform.Schema.Validator do
     end
   end
 
-  defstruct name: nil,       # The name of this validator
-            validator: nil,  # The validator function
-            definition: "",  # The definition of the validator function as a string
+  # The name of this validator
+  defstruct name: nil,
+            # The validator function
+            validator: nil,
+            # The definition of the validator function as a string
+            definition: "",
             persist: true
 
-  @callback validate(term, [term]) :: :ok | {:warn, String.t} | {:error, String.t}
+  @callback validate(term, [term]) :: :ok | {:warn, String.t()} | {:error, String.t()}
 
   def from_quoted(name) when is_atom(name) do
     %Validator{definition: nil, validator: name}
   end
+
   def from_quoted({_, _, module_path}) do
     %Validator{definition: nil, validator: Module.concat(module_path)}
   end
+
   def from_quoted({name, validator}) when is_function(validator, 1) do
-    definition = validator
-    case is_function(validator, 1) do
-      true ->
-        %Validator{name: Atom.to_string(name), definition: definition, validator: validator}
-      false ->
-        raise Conform.Schema.SchemaError, message: "Invalid validator #{name}, it must be a function of arity 1."
-    end
+    %Validator{name: Atom.to_string(name), definition: validator, validator: validator}
+  end
+
+  def from_quoted({name, _validator}) do
+    raise Conform.Schema.SchemaError,
+      message: "Invalid validator #{name}, it must be a function of arity 1."
   end
 
   @doc """
@@ -66,7 +70,8 @@ defmodule Conform.Schema.Validator do
   """
   @spec load() :: [%Validator{}]
   def load() do
-    Conform.Utils.load_plugins_of(__MODULE__)
+    __MODULE__
+    |> Conform.Utils.load_plugins_of()
     |> Enum.map(fn module -> %Validator{definition: nil, validator: module} end)
   end
 end

@@ -27,15 +27,19 @@ defmodule Conform.Schema.Transform do
   values from the configuration as shown in the example above.
   """
   alias Conform.Schema.Transform
+
   defmacro __using__(_) do
     quote do
       @behaviour Conform.Schema.Transform
     end
   end
 
-  defstruct path: "",       # The path of the setting in sys.config where the transformed value will be placed
-            transform: nil, # The transformation function
-            definition: "", # The quoted function definition
+  # The path of the setting in sys.config where the transformed value will be placed
+  defstruct path: "",
+            # The transformation function
+            transform: nil,
+            # The quoted function definition
+            definition: "",
             persist: true
 
   @callback transform([{term, term}]) :: [{term, term}]
@@ -43,13 +47,17 @@ defmodule Conform.Schema.Transform do
   def from_quoted({key, transform}) when is_atom(transform) do
     %Transform{path: Atom.to_string(key), definition: nil, transform: transform}
   end
+
   def from_quoted({key, transform}) do
     definition = transform
+
     case is_function(transform, 1) do
       true ->
         %Transform{path: Atom.to_string(key), definition: definition, transform: transform}
+
       false ->
-        raise Conform.Schema.SchemaError, message: "Invalid transform for #{key}, it must be a function of arity 1."
+        raise Conform.Schema.SchemaError,
+          message: "Invalid transform for #{key}, it must be a function of arity 1."
     end
   end
 end

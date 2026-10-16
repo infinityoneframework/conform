@@ -2,17 +2,14 @@ defmodule ExampleApp.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :example_app,
-     version: "0.0.1",
-     elixir: ">= 1.0.0",
-     deps: deps()]
+    [app: :example_app, version: "0.0.1", elixir: ">= 1.0.0", deps: deps()]
   end
 
   # Configuration for the OTP application
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger]]
+    [extra_applications: [:logger]]
   end
 
   # Dependencies can be Hex packages:
@@ -25,6 +22,9 @@ defmodule ExampleApp.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:fake_app, path: "../fake_app", override: true}]
+    [
+      {:conform, path: "../../.."},
+      {:fake_app, path: "../fake_app", override: true}
+    ]
   end
 end
