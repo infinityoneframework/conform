@@ -7,8 +7,7 @@ config :tiser, Tiser.Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "oIXBLJF+Ar+bjNUyPOxij3oCmH5F89Y2Y+fIozRckOLabpzoYYou1GsdFAOmNcHD",
   render_errors: [view: Tiser.Web.ErrorView, accepts: ~w(json)],
-  pubsub: [name: Tiser.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Tiser.PubSub, adapter: Phoenix.PubSub.PG2]
 
 config :logger, :console,
   format: "$date $time $metadata[$level] $message\n",
@@ -59,10 +58,11 @@ config :logger, :debug_log,
 
 config :guardian, Guardian,
   hooks: GuardianDb,
-  allowed_algos: ["RS512"], # ["ES256", "ES384", "ES512", "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"]
+  # ["ES256", "ES384", "ES512", "HS256", "HS384", "HS512", "RS256", "RS384", "RS512"]
+  allowed_algos: ["RS512"],
   verify_module: Guardian.JWT,
   issuer: "Toooooooooooooooooo",
-  ttl: { 1, :days },
+  ttl: {1, :days},
   verify_issuer: true,
   secret_key: "priv/keys/rsa-2048.pem",
   serializer: Tiser.GuardianSerializer
@@ -70,7 +70,8 @@ config :guardian, Guardian,
 config :guardian_db, GuardianDb,
   repo: Tiser.Repo,
   schema_name: "auth_tokens",
-  sweep_interval: 10 # 1 minute
+  # 1 minute
+  sweep_interval: 10
 
 config :tiser, Tiser.Web.Endpoint,
   http: [

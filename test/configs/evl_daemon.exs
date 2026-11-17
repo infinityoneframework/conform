@@ -1,6 +1,6 @@
 import Config
 
-config :evl_daemon, host: '127.0.0.1'
+config :evl_daemon, host: ~c"127.0.0.1"
 config :evl_daemon, port: 4025
 config :evl_daemon, password: "SECRET"
 config :evl_daemon, auto_connect: false

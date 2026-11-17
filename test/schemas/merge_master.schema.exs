@@ -33,17 +33,23 @@
   ],
   transforms: [
     "lager.handlers": fn conf ->
-      file_handlers = case Conform.Conf.find(conf, "lager.handlers.lager_file_backend.$key") do
-        [] -> []
-        levels when is_list(levels) ->
-          Enum.map(levels, fn {[_, _, _, level], path} ->
-            {:lager_file_backend, [level: List.to_atom(level), file: path]}
-          end)
-      end
-      console_handler = case Conform.Conf.get(conf, "lager.handlers.lager_console_backend.level") do
-        []              -> []
-        [{_path, level}] -> [lager_console_backend: level]
-      end
+      file_handlers =
+        case Conform.Conf.find(conf, "lager.handlers.lager_file_backend.$key") do
+          [] ->
+            []
+
+          levels when is_list(levels) ->
+            Enum.map(levels, fn {[_, _, _, level], path} ->
+              {:lager_file_backend, [level: List.to_atom(level), file: path]}
+            end)
+        end
+
+      console_handler =
+        case Conform.Conf.get(conf, "lager.handlers.lager_console_backend.level") do
+          [] -> []
+          [{_path, level}] -> [lager_console_backend: level]
+        end
+
       Conform.Conf.remove(conf, "lager.handlers")
       console_handler ++ file_handlers
     end

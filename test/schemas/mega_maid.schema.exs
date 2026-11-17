@@ -47,7 +47,8 @@
       commented: true,
       datatype: :binary,
       default: "not secret, override in mega_maid.conf",
-      doc: "The secret key used to encrypt the Guardian token. This should be kept secure to ensure fake tokens cannot be generated.",
+      doc:
+        "The secret key used to encrypt the Guardian token. This should be kept secure to ensure fake tokens cannot be generated.",
       hidden: false,
       to: "guardian.Elixir.Guardian.secret_key"
     ],
@@ -55,7 +56,8 @@
       commented: false,
       datatype: :atom,
       default: MegaMaid.GuardianSerializer,
-      doc: "The module that converts from the Guardian token to a User and back. DO NOT CHANGE THIS.",
+      doc:
+        "The module that converts from the Guardian token to a User and back. DO NOT CHANGE THIS.",
       hidden: true,
       to: "guardian.Elixir.Guardian.serializer"
     ],
@@ -105,7 +107,8 @@
         "html",
         "json"
       ],
-      doc: "Provide documentation for mega_maid.Elixir.MegaMaid.Endpoint.render_errors.accepts here.",
+      doc:
+        "Provide documentation for mega_maid.Elixir.MegaMaid.Endpoint.render_errors.accepts here.",
       hidden: true,
       to: "mega_maid.Elixir.MegaMaid.Endpoint.render_errors.accepts"
     ],
@@ -137,7 +140,8 @@
       commented: true,
       datatype: :binary,
       default: "dat.example.com",
-      doc: "The external host name of the site. Needs to be correct so that email URLs are correct, for example.",
+      doc:
+        "The external host name of the site. Needs to be correct so that email URLs are correct, for example.",
       hidden: false,
       to: "mega_maid.Elixir.MegaMaid.Endpoint.url.host"
     ],
@@ -145,7 +149,8 @@
       commented: true,
       datatype: :binary,
       default: "https",
-      doc: "The external protocol of the site. Needs to be correct so that email URLs are correct, for example",
+      doc:
+        "The external protocol of the site. Needs to be correct so that email URLs are correct, for example",
       hidden: false,
       to: "mega_maid.Elixir.MegaMaid.Endpoint.url.scheme"
     ],
@@ -153,7 +158,8 @@
       commented: true,
       datatype: :integer,
       default: 443,
-      doc: "The external port of the site. Needs to be correct so that email URLs are correct, for example.",
+      doc:
+        "The external port of the site. Needs to be correct so that email URLs are correct, for example.",
       hidden: false,
       to: "mega_maid.Elixir.MegaMaid.Endpoint.url.port"
     ],
@@ -185,7 +191,8 @@
       default: [
         "//dat.example.com}"
       ],
-      doc: "The URLs that this site can be accessed with. This allows CORS checks to work correctly.",
+      doc:
+        "The URLs that this site can be accessed with. This allows CORS checks to work correctly.",
       hidden: false,
       to: "mega_maid.Elixir.MegaMaid.Endpoint.check_origin"
     ],
